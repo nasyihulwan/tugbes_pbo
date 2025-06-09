@@ -1,7 +1,7 @@
 package com.mycompany.tugbes_pbo;
 
 import com.mycompany.tugbes_pbo.DashboardPetugas;
-import com.mycompany.tugbes_pbo.DashboardMasyarakat;
+import com.mycompany.tugbes_pbo.DashboardMahasiswa;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.sql.*;
 import javax.swing.JOptionPane;
@@ -22,6 +22,7 @@ public class DashboardLogin extends javax.swing.JFrame {
      */
     public DashboardLogin() {
         initComponents();
+        getContentPane().setBackground(new java.awt.Color(9,31,64));
     }
 
     /**
@@ -42,8 +43,10 @@ public class DashboardLogin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel1.setForeground(new java.awt.Color(204, 204, 204));
         jLabel1.setText("Password");
 
+        jLabel2.setForeground(new java.awt.Color(204, 204, 204));
         jLabel2.setText("Username");
 
         btnLogin.setText("Masuk");
@@ -53,6 +56,7 @@ public class DashboardLogin extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setForeground(new java.awt.Color(204, 204, 204));
         jLabel3.setText("LOGIN");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -103,57 +107,74 @@ public class DashboardLogin extends javax.swing.JFrame {
     String username = inputUser.getText();
     String password = inputPassword.getText();
 
-    try {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/latlapmas", "root", "");
-
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/ruangaspira", "root", "")) {
         // Cek di tabel petugas
-        String queryPetugas = "SELECT * FROM petugas WHERE username = ?";
-        PreparedStatement stmtPetugas = conn.prepareStatement(queryPetugas);
-        stmtPetugas.setString(1, username);
-        ResultSet rsPetugas = stmtPetugas.executeQuery();
+        // Pastikan Anda mengambil semua kolom yang diperlukan (id_petugas, nama_petugas, level, password)
+        String queryPetugas = "SELECT id_petugas, nama_petugas, level, password FROM petugas WHERE username = ?";
+        try (PreparedStatement stmtPetugas = conn.prepareStatement(queryPetugas)) {
+            stmtPetugas.setString(1, username);
+            try (ResultSet rsPetugas = stmtPetugas.executeQuery()) {
+                if (rsPetugas.next()) {
+                    String hashedPassword = rsPetugas.getString("password");
+                    BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
 
-        if (rsPetugas.next()) {
-            String hashedPassword = rsPetugas.getString("password");
-            BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
+                    if (result.verified) {
+                        // --- BAGIAN PENTING: SET DATA SESI UNTUK PETUGAS ---
+                        UserSession session = UserSession.getInstance();
+                        session.setUsername(username);
+                        session.setIdPetugas(rsPetugas.getString("id_petugas"));
+                        session.setNama(rsPetugas.getString("nama_petugas"));
+                        session.setLevel(rsPetugas.getString("level"));
+                        // --------------------------------------------------
 
-            if (result.verified) {
-                JOptionPane.showMessageDialog(this, "Login sebagai Petugas berhasil!");
-                this.setVisible(false);
-                new DashboardPetugas().setVisible(true);
-                conn.close();
-                return;
-            } else {
-                JOptionPane.showMessageDialog(this, "Password salah untuk akun Petugas!");
-                conn.close();
-                return;
+                        JOptionPane.showMessageDialog(this, "Login sebagai Petugas berhasil!");
+                        this.setVisible(false); // Sembunyikan jendela login
+                        new DashboardPetugas().setVisible(true); // Tampilkan dashboard petugas
+                        return; // Keluar dari metode setelah login berhasil
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Password salah untuk akun Petugas!");
+                        return; // Keluar jika password salah
+                    }
+                }
             }
         }
 
-        // Jika tidak ditemukan di petugas, cek di masyarakat
-        String queryMasyarakat = "SELECT * FROM masyarakat WHERE username = ?";
-        PreparedStatement stmtMasyarakat = conn.prepareStatement(queryMasyarakat);
-        stmtMasyarakat.setString(1, username);
-        ResultSet rsMasyarakat = stmtMasyarakat.executeQuery();
+        // Jika tidak ditemukan di petugas, cek di mahasiswa
+        // Pastikan Anda mengambil semua kolom yang diperlukan (nim, nama, password)
+        String queryMahasiswa = "SELECT nim, nama, password FROM mahasiswa WHERE username = ?";
+        try (PreparedStatement stmtMahasiswa = conn.prepareStatement(queryMahasiswa)) {
+            stmtMahasiswa.setString(1, username);
+            try (ResultSet rsMahasiswa = stmtMahasiswa.executeQuery()) {
+                if (rsMahasiswa.next()) {
+                    String hashedPassword = rsMahasiswa.getString("password");
+                    BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
 
-        if (rsMasyarakat.next()) {
-            String hashedPassword = rsMasyarakat.getString("password");
-            BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
+                    if (result.verified) {
+                        // --- BAGIAN PENTING: SET DATA SESI UNTUK MAHASISWA ---
+                        UserSession session = UserSession.getInstance();
+                        session.setUsername(username);
+                        session.setNim(rsMahasiswa.getString("nim"));
+                        session.setNama(rsMahasiswa.getString("nama"));
+                        // ----------------------------------------------------
 
-            if (result.verified) {
-                JOptionPane.showMessageDialog(this, "Login sebagai Masyarakat berhasil!");
-                this.setVisible(false);
-                new DashboardMasyarakat().setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Password salah untuk akun Masyarakat!");
+                        JOptionPane.showMessageDialog(this, "Login sebagai Mahasiswa berhasil!");
+                        this.setVisible(false); // Sembunyikan jendela login
+                        new DashboardMahasiswa().setVisible(true); // Tampilkan dashboard mahasiswa
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Password salah untuk akun Mahasiswa!");
+                    }
+                } else {
+                    // Jika tidak ditemukan di kedua tabel
+                    JOptionPane.showMessageDialog(this, "Username tidak ditemukan!");
+                }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Username tidak ditemukan!");
         }
-
-        conn.close();
+    } catch (SQLException e) {
+        e.printStackTrace(); // Cetak stack trace untuk debugging
+        JOptionPane.showMessageDialog(this, "Kesalahan Database: " + e.getMessage() + "\nPastikan XAMPP/MySQL berjalan dan database 'ruangaspira' terhubung dengan benar.");
     } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        e.printStackTrace(); // Cetak stack trace untuk debugging
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan tak terduga: " + e.getMessage());
     }
     }//GEN-LAST:event_btnLoginActionPerformed
 
