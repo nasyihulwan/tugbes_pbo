@@ -20,6 +20,8 @@ import java.awt.event.ActionListener; // Untuk aksi tombol
 import java.io.File; // Untuk membuka file
 import java.awt.Desktop; // Untuk membuka file
 import java.sql.Date;
+import java.awt.Color; // Import Color class
+import javax.swing.JFrame;
 
 /**
  *
@@ -32,6 +34,10 @@ public class DashboardMahasiswa extends javax.swing.JFrame {
      */
     public DashboardMahasiswa() {
         initComponents();
+        getContentPane().setBackground(new java.awt.Color(9,31,64));
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        namaMahasiswa.setForeground(Color.WHITE); // Example: Set to white
+        nim.setForeground(Color.WHITE);           // Example: Set to white
         // --- BAGIAN PENTING: Mengambil dan Menampilkan Data Sesi ---
         UserSession session = UserSession.getInstance();
 
@@ -105,11 +111,16 @@ public class DashboardMahasiswa extends javax.swing.JFrame {
         tabelHistoriAspirasi = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        setSize(new java.awt.Dimension(1920, 1080));
 
+        namaMahasiswa.setFont(new java.awt.Font("Helvetica Neue", 0, 48)); // NOI18N
         namaMahasiswa.setText("Nama");
 
+        nim.setFont(new java.awt.Font("Helvetica Neue", 0, 48)); // NOI18N
         nim.setText("NIM");
 
+        buatAspirasi.setFont(new java.awt.Font("Helvetica Neue", 0, 40)); // NOI18N
         buatAspirasi.setText("Buat Aspirasi");
         buatAspirasi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -135,26 +146,26 @@ public class DashboardMahasiswa extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addGap(67, 67, 67)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buatAspirasi)
+                    .addComponent(buatAspirasi, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nim)
                     .addComponent(namaMahasiswa)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 737, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(46, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1553, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(350, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(55, 55, 55)
                 .addComponent(namaMahasiswa)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nim)
-                .addGap(18, 18, 18)
-                .addComponent(buatAspirasi)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addGap(68, 68, 68)
+                .addComponent(buatAspirasi, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 597, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(107, Short.MAX_VALUE))
         );
 
         pack();

@@ -3,6 +3,7 @@
  */
 
 package com.mycompany.tugbes_pbo;
+import com.mycompany.tugbes_pbo.DashboardLogin;
 
 /**
  *
@@ -11,6 +12,7 @@ package com.mycompany.tugbes_pbo;
 public class TUGBES_PBO {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        DashboardLogin DashboardLogin = new DashboardLogin();
+        DashboardLogin.setVisible(true);
     }
 }

@@ -3,6 +3,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package com.mycompany.tugbes_pbo;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -10,12 +20,79 @@ package com.mycompany.tugbes_pbo;
  */
 public class DataAspirasi extends javax.swing.JInternalFrame {
 
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/ruangaspira";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "";
+
     /**
      * Creates new form DataAspirasi
      */
     public DataAspirasi() {
         initComponents();
-        getContentPane().setBackground(new java.awt.Color(9,31,64));
+        getContentPane().setBackground(new java.awt.Color(9, 31, 64));
+        loadDataAspirasi();
+        setupStatusColumn();
+    }
+
+    private void loadDataAspirasi() {
+        DefaultTableModel model = (DefaultTableModel) tabelDataAspirasi.getModel();
+        model.setRowCount(0);
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+            String sql = "SELECT " +
+                         "a.id_aspirasi, " +
+                         "a.tgl_aspirasi, " +
+                         "m.nama AS nama_pelapor, " +
+                         "a.judul_aspirasi, " +
+                         "ak.nama_kategori AS kategori, " +
+                         "a.status AS status_aspirasi " + // Fetch the status column
+                         "FROM aspirasi AS a " +
+                         "JOIN mahasiswa AS m ON a.NIM = m.NIM " +
+                         "JOIN aspirasi_kategori AS ak ON a.kategori = ak.id " +
+                         "ORDER BY a.tgl_aspirasi DESC";
+
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            int no = 1;
+
+            while (rs.next()) {
+                String tglAspirasi = rs.getString("tgl_aspirasi");
+                String namaPelapor = rs.getString("nama_pelapor");
+                String judulAspirasi = rs.getString("judul_aspirasi");
+                String kategori = rs.getString("kategori");
+                String statusAspirasi = rs.getString("status_aspirasi"); // Get the status
+
+                model.addRow(new Object[]{no++, tglAspirasi, namaPelapor, judulAspirasi, kategori, statusAspirasi});
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            System.err.println("SQL Error: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+
+    private void setupStatusColumn() {
+        TableColumn statusColumn = tabelDataAspirasi.getColumnModel().getColumn(5); // "Status" column is at index 5
+
+        String[] statusOptions = {"Pending", "Diproses", "Selesai", "Ditolak"};
+        JComboBox<String> statusComboBox = new JComboBox<>(statusOptions);
+
+        statusColumn.setCellEditor(new DefaultCellEditor(statusComboBox));
     }
 
     /**
@@ -29,6 +106,11 @@ public class DataAspirasi extends javax.swing.JInternalFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tabelDataAspirasi = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        btnDelete = new javax.swing.JButton();
+        btnUpdate1 = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
 
         setClosable(true);
         setTitle("Data Aspirasi");
@@ -41,26 +123,44 @@ public class DataAspirasi extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "No", "Tgl Aspirasi", "Nama Pelapor", "Judul Aspirasi", "Kategori", "Aksi"
+                "No", "Tgl Aspirasi", "Nama Pelapor", "Judul Aspirasi", "Kategori", "Status"
             }
         ));
         jScrollPane1.setViewportView(tabelDataAspirasi);
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnDelete.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        btnDelete.setText("DELETE");
+        jPanel1.add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 146, 221, -1));
+
+        btnUpdate1.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        btnUpdate1.setText("UPDATE");
+        jPanel1.add(btnUpdate1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 73, 221, -1));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 44, 221, -1));
+
+        jLabel1.setText("Update Status Aspirasi");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 21, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
         );
 
         pack();
@@ -68,6 +168,11 @@ public class DataAspirasi extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnUpdate1;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelDataAspirasi;
     // End of variables declaration//GEN-END:variables

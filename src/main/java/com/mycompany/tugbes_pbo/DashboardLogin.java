@@ -1,9 +1,10 @@
 package com.mycompany.tugbes_pbo;
 
-import com.mycompany.tugbes_pbo.DashboardPetugas;
+import com.mycompany.tugbes_pbo.DashboardAdmin;
 import com.mycompany.tugbes_pbo.DashboardMahasiswa;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.sql.*;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /*
@@ -23,6 +24,7 @@ public class DashboardLogin extends javax.swing.JFrame {
     public DashboardLogin() {
         initComponents();
         getContentPane().setBackground(new java.awt.Color(9,31,64));
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
     }
 
     /**
@@ -42,13 +44,27 @@ public class DashboardLogin extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        setSize(new java.awt.Dimension(1920, 1080));
 
+        inputUser.setFont(new java.awt.Font("Helvetica Neue", 0, 40)); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 0, 40)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 204, 204));
         jLabel1.setText("Password");
 
+        inputPassword.setFont(new java.awt.Font("Helvetica Neue", 0, 40)); // NOI18N
+        inputPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputPasswordActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 40)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(204, 204, 204));
         jLabel2.setText("Username");
 
+        btnLogin.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btnLogin.setText("Masuk");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -56,6 +72,7 @@ public class DashboardLogin extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 48)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(204, 204, 204));
         jLabel3.setText("LOGIN");
 
@@ -64,40 +81,41 @@ public class DashboardLogin extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(432, 432, 432)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(inputPassword)
+                                .addComponent(inputUser, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnLogin)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2))
-                                .addGap(30, 30, 30)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(inputPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                                    .addComponent(inputUser)))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(175, 175, 175)
+                        .addGap(355, 355, 355)
                         .addComponent(jLabel3)))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(660, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(41, 41, 41)
+                .addGap(222, 222, 222)
                 .addComponent(jLabel3)
-                .addGap(62, 62, 62)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(inputUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(inputPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
-                .addComponent(btnLogin)
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addGap(101, 101, 101)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(inputUser)))
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(inputPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(81, 81, 81)
+                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(316, 316, 316))
         );
 
         pack();
@@ -129,7 +147,7 @@ public class DashboardLogin extends javax.swing.JFrame {
 
                         JOptionPane.showMessageDialog(this, "Login sebagai Petugas berhasil!");
                         this.setVisible(false); // Sembunyikan jendela login
-                        new DashboardPetugas().setVisible(true); // Tampilkan dashboard petugas
+                        new DashboardAdmin().setVisible(true); // Tampilkan dashboard petugas
                         return; // Keluar dari metode setelah login berhasil
                     } else {
                         JOptionPane.showMessageDialog(this, "Password salah untuk akun Petugas!");
@@ -177,6 +195,10 @@ public class DashboardLogin extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Terjadi kesalahan tak terduga: " + e.getMessage());
     }
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void inputPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputPasswordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputPasswordActionPerformed
 
     /**
      * @param args the command line arguments
